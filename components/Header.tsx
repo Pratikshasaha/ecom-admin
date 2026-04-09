@@ -54,11 +54,18 @@ export default function Header({ currentPage }: HeaderProps) {
             <a href="/products" className={`px-3 py-1 text-xs ${currentPage === 'products' ? 'text-white bg-slate-700 font-medium' : 'text-slate-300 hover:text-white hover:bg-slate-700'} rounded transition`}>
               🛍️ Products
             </a>
-            {typeof window !== 'undefined' ? localStorage.getItem('userRole') === 'superadmin' ? (
-              <a href="/users" className={`px-3 py-1 text-xs ${currentPage === 'users' ? 'text-white bg-slate-700 font-medium' : 'text-slate-300 hover:text-white hover:bg-slate-700'} rounded transition`}>
-                👥 Users
-              </a>
-            ) : null : null}
+{(() => {
+              if (typeof window === 'undefined') return null;
+              const userRole = localStorage.getItem('userRole');
+              if (userRole === 'superadmin') {
+                return (
+                  <a href="/users" className={`px-3 py-1 text-xs ${currentPage === 'users' ? 'text-white bg-slate-700 font-medium' : 'text-slate-300 hover:text-white hover:bg-slate-700'} rounded transition`}>
+                    👥 Users
+                  </a>
+                );
+              }
+              return null;
+            })()}
             <a href="/orders" className={`px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition`}>
               📋 Orders
             </a>
