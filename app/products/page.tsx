@@ -26,6 +26,7 @@ interface Product {
   imagePath?: string;
   image?: string;
   vendorId?: string | number;
+  vendorName?: string;
 }
 
 export default function ProductsPage() {
