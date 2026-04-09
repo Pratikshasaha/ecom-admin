@@ -180,9 +180,10 @@ export default function ProductsPage() {
               <a href="/products" className="px-3 py-1 text-xs text-white bg-slate-700 rounded transition">
                 🛍️ Products
               </a>
-              <a href="/" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
+<a href="/users" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
                 👥 Users
               </a>
+
               <a href="#settings" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
                 ⚙️ Settings
               </a>
@@ -205,9 +206,10 @@ export default function ProductsPage() {
                 <a href="/products" className="block px-4 py-2 text-sm text-white bg-slate-600 transition">
                   🛍️ Products
                 </a>
-                <a href="/" className="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 transition">
-                  👥 Users
-                </a>
+              <a href="/users" className="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 transition">
+                👥 Users
+              </a>
+
                 <a href="#settings" className="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 transition">
                   ⚙️ Settings
                 </a>
