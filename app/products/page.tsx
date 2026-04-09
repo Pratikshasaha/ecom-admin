@@ -670,12 +670,20 @@ export default function ProductsPage() {
                     disabled={vendorsLoading}
                   >
                     <option value="">Select Vendor</option>
-                    {vendors.map((vendor) => (
-                      <option key={vendor.id} value={String(vendor.id)}>
-                        {vendor.vendorName || vendor.name} (
-                        {vendor.vendorLocation})
-                      </option>
-                    ))}
+                    {(() => {
+                      const loggedInUser = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem("loggedInUser") || "{}") : {};
+                      return loggedInUser.role === 'superadmin' ? vendors.map((vendor) => (
+                        <option key={vendor.id} value={String(vendor.id)}>
+                          {vendor.vendorName || vendor.name} (
+                          {vendor.vendorLocation})
+                        </option>
+                      )) : (
+                        <option value={String(loggedInUser.id)}>
+                          {loggedInUser.vendorName || loggedInUser.name} (
+                          {loggedInUser.location || 'N/A'})
+                        </option>
+                      );
+                    })()}
                   </select>
                   {vendorsLoading && (
                     <p className="text-xs text-slate-500 mt-1">
