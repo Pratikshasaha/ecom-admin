@@ -156,6 +156,11 @@ export default function ProductsPage() {
     setLoading(true);
     setError("");
     try {
+      const loggedInUser = JSON.parse(
+        localStorage.getItem("loggedInUser") || "{}",
+      );
+      console.log("Logged in user:", loggedInUser);
+
       const response = await fetch(
         "https://ecom-rest-topaz.vercel.app/products",
       );
@@ -165,9 +170,22 @@ export default function ProductsPage() {
         throw new Error(data.message || "Failed to fetch products");
       }
 
-      const productsList = Array.isArray(data)
-        ? data
-        : data.products || data.data || [];
+      let productsList;
+      if (loggedInUser.role === "superadmin") {
+        // Superadmin sees all products - no filter
+        productsList = Array.isArray(data)
+          ? data
+          : data.products || data.data || [];
+      } else {
+        // Vendors see only their products
+        const vendorName = loggedInUser.vendorName;
+        productsList = Array.isArray(data)
+          ? data.filter((product: Product) => product.vendorName === vendorName)
+          : (data.products || data.data || []).filter(
+              (product: Product) => product.vendorName === vendorName,
+            );
+      }
+
       setProducts(productsList);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch products");
@@ -193,11 +211,11 @@ export default function ProductsPage() {
         category: newProductForm.category || "",
         quantity: parseInt(newProductForm.quantity),
         imagePath: newProductForm.imagePath || "",
-createdAt: new Date().toISOString(),
+        vendorName: selectedVendor?.vendorName || selectedVendor?.name || "",
+        createdAt: new Date().toISOString(),
         // status auto-set by backend
         vendorLocation: selectedVendor?.location || "",
       };
-
 
       const response = await fetch(
         "https://ecom-rest-topaz.vercel.app/products",
@@ -238,6 +256,12 @@ createdAt: new Date().toISOString(),
   };
 
   const handleSignOut = () => {
+    document.cookie =
+      "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("loggedInUser");
+    sessionStorage.removeItem("authToken");
+    sessionStorage.removeItem("userRole");
     window.location.href = "/";
   };
 
@@ -254,9 +278,7 @@ createdAt: new Date().toISOString(),
 
   return (
     <div className="min-h-screen bg-white text-black">
-
       <Header currentPage="Products" />
-
 
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="mb-4">

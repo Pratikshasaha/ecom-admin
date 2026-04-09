@@ -14,7 +14,9 @@ export default function Header({ currentPage }: HeaderProps) {
       // Clear session/cookies
       document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       localStorage.removeItem('authToken');
+      localStorage.removeItem('loggedInUser');
       sessionStorage.removeItem('authToken');
+      sessionStorage.removeItem('userRole');
       
       // Redirect to home/login
       window.location.href = '/';
@@ -28,9 +30,9 @@ export default function Header({ currentPage }: HeaderProps) {
     <div className="bg-slate-800 border-b border-slate-300 relative">
       <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <h1 className="text-lg font-bold text-white">Admin Dashboard</h1>
+          <h1 className="text-lg font-bold text-white">Precia E-Commerce Dashboard</h1>
           <nav className="text-xs text-slate-300 hidden md:block">
-            <a href="/" className={`hover:text-white ${currentPage === 'dashboard' ? 'text-white font-medium' : ''}`}>Home</a>
+            <a href="/" className={`hover:text-white ${currentPage === 'dashboard' ? 'text-white font-medium' : ''}`} title="Dashboard/Profile">📊 Dashboard</a>
             <span className="mx-2">/</span>
             <span className="text-white font-medium">{currentPage}</span>
           </nav>
@@ -47,16 +49,16 @@ export default function Header({ currentPage }: HeaderProps) {
             </svg>
           </button>
 
-          <nav className="hidden md:flex items-center space-x-1">
-            <a href="/" className={`px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition ${currentPage === 'dashboard' ? 'text-white bg-slate-700 font-medium' : ''}`}>
-              📊 Dashboard
-            </a>
+
+            <nav className="hidden md:flex items-center space-x-1">
             <a href="/products" className={`px-3 py-1 text-xs ${currentPage === 'products' ? 'text-white bg-slate-700 font-medium' : 'text-slate-300 hover:text-white hover:bg-slate-700'} rounded transition`}>
               🛍️ Products
             </a>
-            <a href="/users" className={`px-3 py-1 text-xs ${currentPage === 'users' ? 'text-white bg-slate-700 font-medium' : 'text-slate-300 hover:text-white hover:bg-slate-700'} rounded transition`}>
-              👥 Users
-            </a>
+            {typeof window !== 'undefined' && localStorage.getItem('userRole') === 'superadmin' && (
+              <a href="/users" className={`px-3 py-1 text-xs ${currentPage === 'users' ? 'text-white bg-slate-700 font-medium' : 'text-slate-300 hover:text-white hover:bg-slate-700'} rounded transition`}>
+                👥 Users
+              </a>
+            )}
             <a href="/orders" className={`px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition`}>
               📋 Orders
             </a>

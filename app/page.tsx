@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 interface UserType {
   id: string | number;
@@ -13,10 +13,10 @@ interface UserType {
 }
 
 export default function Home() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [user, setUser] = useState<UserType | null>(null);
   const [profile, setProfile] = useState<UserType | null>(null);
@@ -25,14 +25,14 @@ export default function Home() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
     setSuccess(false);
 
     try {
-      const response = await fetch('https://ecom-rest-topaz.vercel.app/login', {
-        method: 'POST',
+      const response = await fetch("https://ecom-rest-topaz.vercel.app/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email,
@@ -43,7 +43,7 @@ export default function Home() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || 'Invalid credentials');
+        setError(data.message || "Invalid credentials");
         return;
       }
 
@@ -52,22 +52,28 @@ export default function Home() {
 
       if (userData.id) {
         try {
-          const profileResponse = await fetch(`https://ecom-rest-topaz.vercel.app/users/${userData.id}`);
+          const profileResponse = await fetch(
+            `https://ecom-rest-topaz.vercel.app/users/${userData.id}`,
+          );
           const profileData = await profileResponse.json();
 
           if (profileResponse.ok) {
             setProfile(profileData);
+            localStorage.setItem("loggedInUser", JSON.stringify(profileData));
+            localStorage.setItem("userRole", profileData.role);
           }
         } catch (profileErr) {
-          console.error('Failed to fetch profile:', profileErr);
+          console.error("Failed to fetch profile:", profileErr);
         }
+      } else {
+        localStorage.setItem("loggedInUser", JSON.stringify(userData));
       }
 
       setSuccess(true);
-      setEmail('');
-      setPassword('');
+      setEmail("");
+      setPassword("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
@@ -80,7 +86,7 @@ export default function Home() {
         <div className="bg-slate-800 border-b border-slate-300 relative">
           <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <h1 className="text-lg font-bold text-white">Admin Dashboard</h1>
+              <h1 className="text-lg font-bold text-white">Precia E-Commerce Dashboard</h1>
               <nav className="text-xs text-slate-300">
                 <span>Home</span>
                 <span className="mx-2">/</span>
@@ -97,16 +103,30 @@ export default function Home() {
               </button>
 
               <nav className="hidden md:flex items-center space-x-1">
-                <a href="/" className="px-3 py-1 text-xs text-white bg-slate-700 rounded transition">
+                <a
+                  href="/"
+                  className="px-3 py-1 text-xs text-white bg-slate-700 rounded transition"
+                >
                   📊 Dashboard
                 </a>
-                <a href="/products" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
+                <a
+                  href="/products"
+                  className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition"
+                >
                   🛍️ Products
                 </a>
-                <a href="/users" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
-                  👥 Users
-                </a>
-                <a href="#settings" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
+                {localStorage.getItem("userRole") === "superadmin" && (
+                  <a
+                    href="/users"
+                    className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition"
+                  >
+                    👥 Users
+                  </a>
+                )}
+                <a
+                  href="#settings"
+                  className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition"
+                >
                   ⚙️ Settings
                 </a>
               </nav>
@@ -126,16 +146,30 @@ export default function Home() {
             {mobileMenuOpen && (
               <div className="absolute top-full right-0 mt-1 w-48 bg-slate-700 rounded-md shadow-lg border border-slate-600 md:hidden">
                 <nav className="py-2">
-                  <a href="/" className="block px-4 py-2 text-sm text-white bg-slate-600 transition">
+                  <a
+                    href="/"
+                    className="block px-4 py-2 text-sm text-white bg-slate-600 transition"
+                  >
                     📊 Dashboard
                   </a>
-                  <a href="/products" className="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 transition">
+                  <a
+                    href="/products"
+                    className="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 transition"
+                  >
                     🛍️ Products
                   </a>
-                  <a href="/users" className="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 transition">
-                    👥 Users
-                  </a>
-                  <a href="#settings" className="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 transition">
+                  {localStorage.getItem("userRole") === "superadmin" && (
+                    <a
+                      href="/users"
+                      className={`px-3 py-1 text-xs rounded transition`}
+                    >
+                      👥 Users
+                    </a>
+                  )}
+                  <a
+                    href="#settings"
+                    className="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 transition"
+                  >
                     ⚙️ Settings
                   </a>
                 </nav>
@@ -147,7 +181,8 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="mb-4">
             <h2 className="text-xl font-bold text-black mb-1">
-              Welcome, <span className="text-slate-600">{user?.name ?? 'User'}</span>
+              Welcome,{" "}
+              <span className="text-slate-600">{user?.name ?? "User"}</span>
             </h2>
             <p className="text-slate-500 text-sm">Profile information</p>
           </div>
@@ -159,9 +194,17 @@ export default function Home() {
                 <h3 className="text-sm font-semibold text-black">Profile</h3>
               </div>
               <div className="space-y-1 text-xs">
-                <p className="text-gray-700"><span className="font-medium">Name:</span> {user?.name ?? 'N/A'}</p>
-                <p className="text-gray-700"><span className="font-medium">Email:</span> {user?.email ?? 'N/A'}</p>
-                <p className="text-gray-700"><span className="font-medium">ID:</span> {user?.id ?? 'N/A'}</p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Name:</span>{" "}
+                  {user?.name ?? "N/A"}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Email:</span>{" "}
+                  {user?.email ?? "N/A"}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">ID:</span> {user?.id ?? "N/A"}
+                </p>
               </div>
             </div>
 
@@ -171,8 +214,14 @@ export default function Home() {
                 <h3 className="text-sm font-semibold text-black">Business</h3>
               </div>
               <div className="space-y-1 text-xs">
-                <p className="text-gray-700"><span className="font-medium">Vendor:</span> {user?.vendorName ?? 'N/A'}</p>
-                <p className="text-gray-700"><span className="font-medium">Location:</span> {user?.location ?? 'N/A'}</p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Vendor:</span>{" "}
+                  {user?.vendorName ?? "N/A"}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Location:</span>{" "}
+                  {user?.location ?? "N/A"}
+                </p>
               </div>
             </div>
 
@@ -182,19 +231,27 @@ export default function Home() {
                 <h3 className="text-sm font-semibold text-black">Contact</h3>
               </div>
               <div className="space-y-1 text-xs">
-                <p className="text-gray-700"><span className="font-medium">Mobile:</span> {user?.mobile ?? 'N/A'}</p>
-                <p className="text-gray-700"><span className="font-medium">Email:</span> {user?.email ?? 'N/A'}</p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Mobile:</span>{" "}
+                  {user?.mobile ?? "N/A"}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Email:</span>{" "}
+                  {user?.email ?? "N/A"}
+                </p>
               </div>
             </div>
           </div>
 
-          {(user?.role === 'superadmin' || user?.role === 'admin') && (
+          {user?.role === "superadmin" && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 shadow-sm">
               <h3 className="text-sm font-semibold text-black mb-2 flex items-center">
                 <span className="mr-2">👥</span>
                 Users Management
               </h3>
-              <p className="text-xs text-slate-600 mb-3">Manage users via dedicated page</p>
+              <p className="text-xs text-slate-600 mb-3">
+                Manage users via dedicated page
+              </p>
               <a
                 href="/users"
                 className="inline-flex items-center px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-medium rounded transition"
@@ -211,7 +268,9 @@ export default function Home() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-slate-900">
       <div className="bg-white p-6 rounded max-w-sm w-full">
-        <h1 className="text-xl font-bold mb-4 text-center text-black">Admin Login</h1>
+        <h1 className="text-xl font-bold mb-4 text-center text-black">
+          Precia E-Commerce
+        </h1>
 
         {error && (
           <div className="mb-3 p-2 bg-red-100 border border-red-300 rounded text-red-800 text-sm">
@@ -221,7 +280,10 @@ export default function Home() {
 
         <form onSubmit={handleLogin} className="space-y-3">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-black mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-black mb-1"
+            >
               Email
             </label>
             <input
@@ -236,7 +298,10 @@ export default function Home() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-black mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-black mb-1"
+            >
               Password
             </label>
             <input
@@ -255,11 +320,10 @@ export default function Home() {
             disabled={loading}
             className="w-full bg-slate-800 text-white py-2 rounded hover:bg-slate-900 transition disabled:bg-gray-400 disabled:cursor-not-allowed font-medium text-sm"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
     </div>
   );
 }
-
