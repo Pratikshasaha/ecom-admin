@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Header from "../../components/Header";
+import EditUserModal from './EditUserModal';
 
 interface User {
   id: string | number;
@@ -26,7 +28,50 @@ export default function UsersPage() {
     role: 'user',
     password: 'password123'
   });
-  const [addingUser, setAddingUser] = useState(false);
+const [addingUser, setAddingUser] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editUserForm, setEditUserForm] = useState({
+    name: '',
+    email: '',
+    vendorName: '',
+    location: '',
+    mobile: '',
+    role: 'user'
+  });
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    if (!editingUser) return;
+    e.preventDefault();
+    const userId = editingUser.id;
+    const response = await fetch(`https://ecom-rest-topaz.vercel.app/users/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editUserForm),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      await fetchUsers();
+      setShowEditModal(false);
+      setEditingUser(null);
+    } else {
+      setUsersError(data.message || 'Update failed');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    const response = await fetch(`https://ecom-rest-topaz.vercel.app/users/${userId}`, {
+      method: 'DELETE',
+    });
+    if (response.ok) {
+      await fetchUsers();
+    } else {
+      const data = await response.json();
+      setUsersError(data.message || 'Delete failed');
+    }
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -96,33 +141,9 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-screen bg-white text-black">
-      {/* Header - same as other pages */}
-      <div className="bg-slate-800 border-b border-slate-300">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-lg font-bold text-white">Admin Dashboard</h1>
-            <nav className="text-xs text-slate-300">
-              <a href="/" className="hover:text-white">Home</a>
-              <span className="mx-2">/</span>
-              <span className="text-white">Users</span>
-            </nav>
-          </div>
-          <nav className="flex items-center space-x-1">
-            <a href="/" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
-              📊 Dashboard
-            </a>
-            <a href="/products" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
-              🛍️ Products
-            </a>
-            <a href="/users" className="px-3 py-1 text-xs text-white bg-slate-700 rounded transition">
-              👥 Users
-            </a>
-            <a href="#settings" className="px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition">
-              ⚙️ Settings
-            </a>
-          </nav>
-        </div>
-      </div>
+
+      <Header currentPage="Users" />
+
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 py-6">
@@ -200,38 +221,67 @@ export default function UsersPage() {
                       <td className="px-3 py-3 text-gray-700">{u.vendorName || '-'}</td>
                       <td className="px-3 py-3 text-gray-700">{u.location || '-'}</td>
                       <td className="px-3 py-3 text-gray-700">{u.mobile || '-'}</td>
-                      <td className="px-3 py-3">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          u.role === 'superadmin' ? 'bg-red-100 text-red-800' :
-                          u.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {u.role || 'user'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
+              <td className="px-3 py-3">
+                <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                  {u.role || 'user'}
+                </span>
+              </td>
+
+              <td className="px-3 py-3 text-right">
+                <div className="flex space-x-1">
+                  <button
+                    onClick={() => {
+                      setEditingUser(u);
+                      setEditUserForm({
+                        name: u.name,
+                        email: u.email,
+                        vendorName: u.vendorName || '',
+                        location: u.location || '',
+                        mobile: u.mobile || '',
+                        role: u.role
+                      });
+                      setShowEditModal(true);
+                    }}
+                    className="text-blue-600 hover:text-blue-800 text-xs p-1 hover:bg-blue-50 rounded transition"
+                    title="Edit"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => handleDeleteUser(String(u.id))}
+                    className="text-red-600 hover:text-red-800 text-xs p-1 hover:bg-red-50 rounded transition"
+                    title="Delete"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
+</div>
 
       {/* Add User Modal */}
       {showAddUserModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Add New User</h3>
+      <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="bg-slate-800 text-white p-4 rounded-t-lg flex items-center justify-between">
+
+              <h3 className="text-xl font-semibold">Add New User</h3>
               <button
                 onClick={() => setShowAddUserModal(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                className="text-white hover:text-gray-200 text-2xl font-bold"
               >
                 ×
               </button>
             </div>
-            <form onSubmit={handleAddUser} className="space-y-4">
+            <div className="p-6">
+            <form onSubmit={handleAddUser} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
               <div>
                 <label className="block text-sm font-medium mb-1">Name *</label>
                 <input
@@ -290,7 +340,7 @@ export default function UsersPage() {
                   className="w-full p-2 border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-slate-500"
                 />
               </div>
-              <div>
+              <div className="lg:col-span-2">
                 <label className="block text-sm font-medium mb-1">Role *</label>
                 <select
                   value={newUserForm.role}
@@ -303,7 +353,7 @@ export default function UsersPage() {
                   <option value="superadmin">Super Admin</option>
                 </select>
               </div>
-              <div className="flex space-x-3">
+              <div className="col-span-full flex space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowAddUserModal(false)}
@@ -320,10 +370,15 @@ export default function UsersPage() {
                 </button>
               </div>
             </form>
+
           </div>
-        </div>
+
+            </div>
+          </div>
       )}
     </div>
   );
 }
+
+
 
