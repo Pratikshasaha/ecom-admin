@@ -1,9 +1,9 @@
-# Product View Table Task
+# Product View Table Task - TODOs
 
-## Steps:
-1. ✅ [Done] Plan approved
-2. ✅ [Done] Create app/products/page.tsx with products table fetching from /products API
-3. ✅ [Done] Update app/page.tsx navigation link for Products to point to /products route
-4. ✅ [Done] Test the implementation (tested via dev server)
-5. ✅ [Done] Task completed
+## Plan Breakdown
+4. ✅ Task complete: Product view table created and functional.
+
+## Progress
+- Planning complete and approved.
+- Ready to implement.
 
