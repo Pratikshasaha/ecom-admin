@@ -7,8 +7,8 @@ interface Order {
   id: string | number;
   orderId?: string;
   userId?: string | number;
-  userEmail?: string;
-  totalAmount: number;
+  email?: string;
+  price: number;
   status: string;
   paymentStatus: string;
   items: Array<{
@@ -135,11 +135,11 @@ export default function OrdersPage() {
                       <td className="px-4 py-3 text-gray-700 font-mono text-sm sticky left-0 bg-white z-10 border-r border-gray-200">
                         #{order.id}
                       </td>
-                      <td className="px-4 py-3 text-gray-900 font-medium max-w-xs truncate" title={order.userEmail}>
-                        {order.userEmail || 'N/A'}
+                      <td className="px-4 py-3 text-gray-900 font-medium max-w-xs truncate" title={order.email}>
+                        {order.email || 'N/A'}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="font-bold text-lg">₹{Number(order.totalAmount).toLocaleString('en-IN')}</span>
+                        <span className="font-bold text-lg">₹{Number(order.price).toLocaleString('en-IN')}</span>
                       </td>
                       <td className="px-4 py-3 text-gray-700">{order.items?.length || 0}</td>
                       <td className="px-4 py-3">
