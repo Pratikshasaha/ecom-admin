@@ -471,8 +471,8 @@ export default function Home() {
               {/* Registration Form */}
               <div className="bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/60">
                 <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-slate-900 mb-2 text-center">New Admin</h2>
-                  <p className="text-slate-600 text-center text-lg">Create your account</p>
+                  <h2 className="text-2xl font-bold text-slate-900 mb-2 text-center">New to Precia</h2>
+                  <p className="text-slate-600 text-center text-lg">Create Your Store Now</p>
                 </div>
 
                 {regError && (
@@ -588,7 +588,7 @@ export default function Home() {
                     disabled={regLoading}
                     className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-teal-600 hover:to-emerald-600 text-white py-3 rounded-xl font-bold text-sm shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {regLoading ? "Creating..." : "Create Admin Account"}
+                    {regLoading ? "Creating..." : "Create Store"}
                   </button>
                 </form>
 
