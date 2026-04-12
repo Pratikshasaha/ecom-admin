@@ -8,6 +8,7 @@ interface User {
   location?: string;
   mobile?: string;
   role: string;
+  status?: string;
 }
 
 interface EditUserModalProps {
@@ -19,14 +20,18 @@ interface EditUserModalProps {
     location: string;
     mobile: string;
     role: string;
+    status?: string;
   };
   setEditUserForm: (form: any) => void;
   handleUpdateUser: (e: React.FormEvent) => void;
   setShowEditModal: (show: boolean) => void;
+  loggedInUserRole?: string;
 }
 
-export default function EditUserModal({ editingUser, editUserForm, setEditUserForm, handleUpdateUser, setShowEditModal }: EditUserModalProps) {
+export default function EditUserModal({ editingUser, editUserForm, setEditUserForm, handleUpdateUser, setShowEditModal, loggedInUserRole }: EditUserModalProps) {
   if (!editingUser) return null;
+
+  const isSuperAdmin = loggedInUserRole === 'superadmin';
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -47,6 +52,7 @@ export default function EditUserModal({ editingUser, editUserForm, setEditUserFo
               type="text"
               value={editUserForm.name}
               onChange={(e) => setEditUserForm({ ...editUserForm, name: e.target.value })}
+              required
               className="w-full p-2 border border-gray-300 rounded focus:ring-1 focus:ring-slate-500"
             />
           </div>
@@ -56,6 +62,7 @@ export default function EditUserModal({ editingUser, editUserForm, setEditUserFo
               type="email"
               value={editUserForm.email}
               onChange={(e) => setEditUserForm({ ...editUserForm, email: e.target.value })}
+              required
               className="w-full p-2 border border-gray-300 rounded focus:ring-1 focus:ring-slate-500"
             />
           </div>
@@ -98,7 +105,20 @@ export default function EditUserModal({ editingUser, editUserForm, setEditUserFo
               <option value="superadmin">Super Admin</option>
             </select>
           </div>
-          <div className="flex space-x-3">
+          {isSuperAdmin && (
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">Status</label>
+              <select
+                value={editUserForm.status || 'pending'}
+                onChange={(e) => setEditUserForm({ ...editUserForm, status: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded focus:ring-1 focus:ring-slate-500"
+              >
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+              </select>
+            </div>
+          )}
+          <div className="md:col-span-2 flex space-x-3">
             <button
               type="button"
               onClick={() => setShowEditModal(false)}

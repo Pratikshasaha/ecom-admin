@@ -55,9 +55,8 @@ export default function Header({ currentPage }: HeaderProps) {
               🛍️ Products
             </a>
 {(() => {
-              if (typeof window === 'undefined') return null;
-              const userRole = localStorage.getItem('userRole');
-              if (userRole === 'superadmin') {
+              const loggedInUser = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('loggedInUser') || '{}') : {};
+              if (loggedInUser.role === 'superadmin') {
                 return (
                   <a href="/users" className={`px-3 py-1 text-xs ${currentPage === 'users' ? 'text-white bg-slate-700 font-medium' : 'text-slate-300 hover:text-white hover:bg-slate-700'} rounded transition`}>
                     👥 Users
@@ -66,9 +65,9 @@ export default function Header({ currentPage }: HeaderProps) {
               }
               return null;
             })()}
-            <a href="/orders" className={`px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition`}>
-              📋 Orders
-            </a>
+                <a href="/orders" className={`px-3 py-1 text-xs ${currentPage === 'orders' ? 'text-white bg-slate-700 font-medium' : 'text-slate-300 hover:text-white hover:bg-slate-700'} rounded transition`}>
+                  📋 Orders
+                </a>
             <a href="/settings" className={`px-3 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded transition`}>
               ⚙️ Settings
             </a>
