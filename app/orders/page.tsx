@@ -85,8 +85,8 @@ export default function OrdersPage() {
 
       // Role filter first
       let roleFiltered = enrichedOrders;
-      if (loggedInUser?.role !== 'superadmin' && loggedInUser?.email) {
-        roleFiltered = enrichedOrders.filter((order) => order.email === loggedInUser.email);
+      if (loggedInUser?.role !== 'superadmin' && loggedInUser?.vendorName) {
+        roleFiltered = enrichedOrders.filter((order) => order.vendorName === loggedInUser.vendorName);
       }
 
       setAllOrders(roleFiltered);
